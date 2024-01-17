@@ -1,10 +1,8 @@
-#!/usr/bin/env python3
-''' Initializes module
-'''
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
-import models.engine.file_storage as fs
+from models.engine.file_storage import FileStorage
 
 
-storage = fs.FileStorage()
-
+storage = FileStorage()
 storage.reload()

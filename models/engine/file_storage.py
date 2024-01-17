@@ -1,57 +1,62 @@
-#!/usr/bin/env python3
-''' contains class used to manage a JSON '''
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 import json
-from import_classes import *
-from datetime import datetime
+from models.base_model import BaseModel
+from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
 
 
-class FileStorage():
-        ''' Performs various actions with a JSON '''
+class FileStorage:
+    """
+    FileStorage class for serializing and deserializing objects into and from
+    files.
+    """
+    __file_path = 'file.json'
+    __objects = dict()
 
-        __objects = dict()
-        __file_path = 'file.json'
+    def __init__(self):
+        """init method for FileStorage class
+        """
+        pass
 
-        def all(self):
-                ''' Returns all objects stored in JSON '''
-                return self.__objects
+    def all(self):
+        """returns the dictionary __objects
+        """
+        return FileStorage.__objects
 
-        def new(self, obj):
-                ''' Puts new object representation into a private variable '''
-                if obj:
-                        key = obj.__class__.__name__ + '.' + obj.id
-                        self.__objects[key] = obj
+    def new(self, obj):
+        """sets in __objects the obj with key <obj class name>.id
 
-        def delete(self, key):
-                ''' Deletes an object from the JSON '''
-                self.__objects.pop(key)
-                self.save()
+        Attributes:
+            obj (Python object): The object to set
+        """
+        dictionary = obj.to_dict()
+        key = '{}.{}'.format(dictionary['__class__'], str(obj.id))
+        FileStorage.__objects[key] = obj
 
-        def update(self, key, attribute_name, attribute_value):
-                ''' Updates an object '''
-                obj = self.__objects[key]
-                if attribute_name in obj.class_att_dict.keys():
-                        obj.__dict__[attribute_name] = (
-                                obj.class_att_dict[attribute_name]
-                                (attribute_value))
-                else:
-                        obj.__dict__[attribute_name] = attribute_value
-                obj.__dict__['updated_at'] = datetime.today()
-                self.save()
+    def save(self):
+        """serializes __objects to the JSON file (path: __file_path)
+        """
+        dictionary = dict()
+        for k, v in FileStorage.__objects.items():
+            dictionary[k] = v.to_dict()
+        with open(FileStorage.__file_path, 'w', encoding='utf-8') as file:
+            json.dump(dictionary, file)
 
-        def save(self):
-                ''' Saves current state of private variable holding objects
-                to JSON '''
-                with open(self.__file_path, 'w+') as f:
-                        json.dump({key: value.to_dict() for
-                                  (key, value) in self.__objects.items()}, f)
-
-        def reload(self):
-                ''' Retrieves objects from JSON '''
-                try:
-                        with open(self.__file_path, 'r') as f:
-                                self.__objects = {key: eval('{}(**{})'.format(
-                                        value['__class__'], value)) for
-                                        (key, value) in json.load(f).items()}
-                except FileNotFoundError:
-                        pass
+    def reload(self):
+        """deserializes the JSON file to __objects ONLY if the JASON file
+        exists, otherwise, do nothing.  If the file doesn't exist, exceptions
+        should be raised
+        """
+        try:
+            with open(FileStorage.__file_path, 'r', encoding='utf-8') as file:
+                json_load = json.load(file)
+            for k, v in json_load.items():
+                FileStorage.__objects[k] = BaseModel(**v)
+        except:
+            pass

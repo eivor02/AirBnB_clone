@@ -1,16 +1,28 @@
-#!/usr/bin/env python3
-''' Contains User class '''
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 from models.base_model import BaseModel
 
 
 class User(BaseModel):
-        ''' A user of hbnb '''
+    """User class inherits from BaseModel
 
-        class_att_dict = {'email': str, 'password': str, 'first_name': str,
-                          'last_name': str}
+    Attributes:
+        email (str): Public class attribute for User's email
+        password (str): Public class attribute for User's password
+        first_name (str): Public class attribute for User's first name
+        last_name (str): Public class attribute for User's last name
+    """
+    email = ''
+    password = ''
+    first_name = ''
+    last_name = ''
 
-        email = ''
-        password = ''
-        first_name = ''
-        last_name = ''
+    def __init__(self, *args, **kwargs):
+        """init method for User class
+
+        Attributes:
+            args (list): The list with arguments
+            kwargs (dict): A dictionary with arguments
+        """
+        super().__init__(*args, **kwargs)

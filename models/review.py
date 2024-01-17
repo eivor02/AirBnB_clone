@@ -1,14 +1,26 @@
-#!/usr/bin/env python3
-''' Contains Review class '''
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 from models.base_model import BaseModel
 
 
 class Review(BaseModel):
-        ''' Review of a place '''
+    """Review class inherits from BaseModel
 
-        class_att_dict = {'place_id': str, 'user_id': str, 'text': str}
+    Attributes:
+        place_id (str): Public class attribute for Review's place_id
+        user_id (str): Public class attribute for Review's user_id
+        text (str): Public class attribute for Review's text
+    """
+    place_id = ""
+    user_id = ""
+    text = ""
 
-        place_id = ''
-        user_id = ''
-        text = ''
+    def __init__(self, *args, **kwargs):
+        """init method for Review class
+
+        Attributes:
+            args (list): The list with arguments
+            kwargs (dict): A dictionary with arguments
+        """
+        super().__init__(*args, **kwargs)

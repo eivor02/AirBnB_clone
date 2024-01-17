@@ -1,12 +1,22 @@
-#!/usr/bin/env python3
-''' Contains Amenity class '''
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 from models.base_model import BaseModel
 
 
 class Amenity(BaseModel):
-        ''' Represents an amenity '''
+    """Amenity class inherits from BaseModel
 
-        class_att_dict = {'name': str}
+    Attribute:
+        name (str): Public class attribute for Amenity's name
+    """
+    name = ""
 
-        name = ''
+    def __init__(self, *args, **kwargs):
+        """init method for Amenity class
+
+        Attributes:
+            args (list): The list with arguments
+            kwargs (dict): A dictionary with arguments
+        """
+        super().__init__(*args, **kwargs)

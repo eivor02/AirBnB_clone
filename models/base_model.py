@@ -1,54 +1,67 @@
-#!/usr/bin/env python3
-''' Contains base model for future classes '''
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
-from uuid import uuid4
+import uuid
 from datetime import datetime
 import models
 
 
-class BaseModel():
-        ''' Sets attributes and methods to be used in all future models '''
+class BaseModel:
+    """
+    base_model that defines all common attributes/methods for other classes
+    """
+    def __init__(self, *args, **kwargs):
+        """init method for BaseModel Class
 
-        class_att_dict = dict()
+        Attributes:
+            args (list): inputted arguments as a list.
+            kwargs (dict): inputted arguments as a dict.
+            id (str) - assign with an uuid when an instance is created.
+            created_at (time): datetime - assign with the current datetime when
+                an instance is created.
+            updated_at (time): datetime - assign with the current datetime when
+                n instance is created and it will be updated every time you
+                change your object.
+        """
+        if len(kwargs) > 0:
+            for k, v in kwargs.items():
+                if k in ['created_at', 'updated_at']:
+                    self.__dict__[k] = datetime\
+                                       .strptime(v, '%Y-%m-%dT%H:%M:%S.%f')
+                elif k == 'id':
+                    self.id = v
+        else:
+            self.id = str(uuid.uuid4())
+            self.created_at = datetime.now()
+            self.updated_at = datetime.now()
+            models.storage.new(self)
 
-        def __init__(self, *args, **kwargs):
-                ''' Initializes an object '''
-                for key in kwargs.keys():
-                        if key == 'created_at' or key == 'updated_at':
-                                self.__dict__[key] = datetime.strptime(
-                                        kwargs[key], '%Y-%m-%dT%H:%M:%S.%f')
-                        else:
-                                self.__dict__[key] = kwargs[key]
-                if 'id' not in self.__dict__.keys():
-                        self.id = str(uuid4())
-                if 'created_at' not in self.__dict__.keys():
-                        self.created_at = datetime.today()
-                models.storage.new(self)
-                models.storage.save()
+    def __str__(self):
+        """str method for BaseModel Class
 
-        def __str__(self):
-                ''' Printable string of object '''
-                return '[{}] ({}) {}'.format(
-                        self.__class__.__name__, self.id, self.__dict__)
+            Return:
+                string (str): string descriptor for BaseModel Class
+        """
+        return "[{}] ({}) {}".format(self.__class__.__name__, self.id,
+                                     self.__dict__)
 
-        def __repr__(self):
-                ''' Repr is same as str for formatting reasons '''
-                return self.__str__()
+    def save(self):
+        """
+        updates the public instance attribute updated_at with the
+        current datetime
+        """
+        self.updated_at = datetime.now()
+        models.storage.save()
 
-        def __setattr__(self, name, value):
-                ''' Setattr is customized for updating '''
-                self.__dict__[name] = value
-                self.save()
+    def to_dict(self):
+        """returns a dictionary containing all keys/values of __dict__
+        of the instance
 
-        def save(self):
-                ''' Updates updated_at attribute and saves to file '''
-                self.__dict__['updated_at'] = datetime.today()
-                models.storage.save()
-
-        def to_dict(self):
-                ''' Creates dictionary for easy saving to JSON '''
-                base_dict = dict(self.__dict__)
-                base_dict['__class__'] = self.__class__.__name__
-                base_dict['created_at'] = self.created_at.isoformat()
-                base_dict['updated_at'] = self.updated_at.isoformat()
-                return base_dict
+        Return:
+            dictionary (dict): Dictionary object that contains __dict__
+        """
+        dictionary = self.__dict__.copy()
+        dictionary["created_at"] = self.created_at.isoformat()
+        dictionary["updated_at"] = self.updated_at.isoformat()
+        dictionary["__class__"] = self.__class__.__name__
+        return dictionary
